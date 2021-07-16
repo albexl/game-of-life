@@ -27,8 +27,9 @@ def handle(event):
 
 def draw(matrix, n):
 
-    white_color = (255, 255, 255)
     black_color = (0, 0, 0)
+    grey_color = (105, 105, 105)
+    white_color = (255, 255, 255)
     game_display.fill(white_color)
 
     for i in range(n):
@@ -39,31 +40,40 @@ def draw(matrix, n):
                 pygame.draw.rect(game_display, black_color, rect)
 
     for i in range(n + 1):
-        pygame.draw.line(game_display, black_color,
+        pygame.draw.line(game_display, grey_color,
                          (i * (HEIGHT // n), 0), (i * (HEIGHT // n), WIDTH), width=1)
 
     for i in range(n + 1):
-        pygame.draw.line(game_display, black_color,
+        pygame.draw.line(game_display, grey_color,
                          (0, i * (WIDTH // n)), (HEIGHT, i * (WIDTH // n)), width=1)
 
     pygame.display.update()
+
+
+def setup(matrix, n):
+    print("Place initial disposition of alive cells")
+
+    draw(matrix, n)
+
+    initial_setup = True
+    while initial_setup:
+        for event in pygame.event.get():
+            if event.type == KEYDOWN and event.key == K_RETURN:
+                initial_setup = False
+
+            if event.type == pygame.MOUSEBUTTONUP:
+                pos = pygame.mouse.get_pos()
+                i = pos[1] // (HEIGHT // n)
+                j = pos[0] // (HEIGHT // n)
+                matrix[i][j] = 1
+                draw(matrix, n)
 
 
 if __name__ == '__main__':
 
     n = int(input('Enter dimension of the system: '))
 
-    starting_cells = min(n**2, 3 * n)
     matrix = [[0] * n for _ in range(n)]
-    population = []
-
-    for i in range(n):
-        for j in range(n):
-            population.append((i, j))
-
-    random.shuffle(population)
-    for i in range(starting_cells):
-        matrix[population[i][0]][population[i][1]] = 1
 
     dx = [1, 1, -1, -1, 0, 0, 1, -1]
     dy = [1, -1, 1, -1, 1, -1, 0, 0]
@@ -71,7 +81,8 @@ if __name__ == '__main__':
     pygame.init()
     game_display = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.flip()
-    game_display.fill((0, 0, 0))
+
+    setup(matrix, n)
 
     while get_alive(matrix) > 0:
 
@@ -97,7 +108,7 @@ if __name__ == '__main__':
             for j in range(n):
                 matrix[i][j] = transition[i][j]
 
-        time.sleep(0.5)
+        time.sleep(0.2)
 
     for event in pygame.event.get():
         handle(event)
