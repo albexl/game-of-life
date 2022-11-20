@@ -1,4 +1,3 @@
-import random
 import time
 
 import pygame
@@ -9,9 +8,7 @@ HEIGHT = 700
 
 
 def get_alive(matrix):
-    count = 0
-    for row in matrix:
-        count += sum(row)
+    count = sum(sum(row) for row in matrix)
     return count
 
 
