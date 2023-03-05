@@ -1,6 +1,7 @@
 """An implementation of the Game of Life."""
 
 
+import itertools
 import sys
 import time
 
@@ -12,8 +13,7 @@ HEIGHT = 700
 
 
 def get_alive(matrix):
-    count = sum(sum(row) for row in matrix)
-    return count
+    return sum(sum(row) for row in matrix)
 
 
 def is_valid(x_cord, y_cord, size):
@@ -92,18 +92,17 @@ if __name__ == '__main__':
         draw(matrix, size)
 
         transition = [[0] * size for _ in range(size)]
-        for row in range(size):
-            for col in range(size):
-                alive = 0
-                for k in range(8):
-                    nx = row + dx[k]
-                    ny = col + dy[k]
-                    if is_valid(nx, ny, size):
-                        alive += matrix[nx][ny]
-                if matrix[row][col] == 1 and alive in [2, 3]:
-                    transition[row][col] = 1
-                if matrix[row][col] == 0 and alive == 3:
-                    transition[row][col] = 1
+        for row, col in itertools.product(range(size), range(size)):
+            alive = 0
+            for k in range(8):
+                nx = row + dx[k]
+                ny = col + dy[k]
+                if is_valid(nx, ny, size):
+                    alive += matrix[nx][ny]
+            if matrix[row][col] == 1 and alive in [2, 3]:
+                transition[row][col] = 1
+            if matrix[row][col] == 0 and alive == 3:
+                transition[row][col] = 1
 
         for row in range(size):
             for col in range(size):
